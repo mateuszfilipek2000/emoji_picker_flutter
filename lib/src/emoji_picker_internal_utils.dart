@@ -19,7 +19,7 @@ class EmojiPickerInternalUtils {
   Future<CategoryEmoji> _getAvailableEmojis(CategoryEmoji category) async {
     var available = (await _platform.invokeListMethod<bool>(
         'getSupportedEmojis', {
-      'source': category.emoji.map((e) => e.emoji).toList(growable: false)
+      'source': category.emoji.map((e) => e.value).toList(growable: false)
     }))!;
 
     return category.copyWith(emoji: [
@@ -53,12 +53,13 @@ class EmojiPickerInternalUtils {
   Future<List<RecentEmoji>> addEmojiToRecentlyUsed(
       {required Emoji emoji, Config config = const Config()}) async {
     // Remove emoji's skin tone in Recent-Category
-    if (emoji.hasSkinTone) {
+    if (emoji case UnicodeEmoji(:final hasSkinTone) when hasSkinTone) {
       emoji = removeSkinTone(emoji);
     }
+
     var recentEmoji = await getRecentEmojis();
     var recentEmojiIndex =
-        recentEmoji.indexWhere((element) => element.emoji.emoji == emoji.emoji);
+        recentEmoji.indexWhere((element) => element.emoji.value == emoji.value);
     if (recentEmojiIndex != -1) {
       // Already exist in recent list
       // Remove it
@@ -82,12 +83,12 @@ class EmojiPickerInternalUtils {
   Future<List<RecentEmoji>> addEmojiToPopularUsed(
       {required Emoji emoji, Config config = const Config()}) async {
     // Remove emoji's skin tone in Recent-Category
-    if (emoji.hasSkinTone) {
+    if (emoji case UnicodeEmoji(:final hasSkinTone) when hasSkinTone) {
       emoji = removeSkinTone(emoji);
     }
     var recentEmoji = await getRecentEmojis();
     var recentEmojiIndex =
-        recentEmoji.indexWhere((element) => element.emoji.emoji == emoji.emoji);
+        recentEmoji.indexWhere((element) => element.emoji.value == emoji.value);
     if (recentEmojiIndex != -1) {
       // Already exist in recent list
       // Just update counter
@@ -122,11 +123,17 @@ class EmojiPickerInternalUtils {
 
   /// Remove skin tone from given emoji
   Emoji removeSkinTone(Emoji emoji) {
-    return emoji.copyWith(
-      emoji: emoji.emoji.replaceFirst(
-        RegExp('${SkinTone.values.join('|')}'),
-        '',
-      ),
-    );
+    // return emoji.copyWith(
+    //   emoji: emoji.emoji.replaceFirst(
+    //     RegExp('${SkinTone.values.join('|')}'),
+    //     '',
+    //   ),
+    // );
+    return switch (emoji) {
+      UnicodeEmoji() => emoji.copyWith(
+          value: emoji.value
+              .replaceFirst(RegExp('${SkinTone.values.join('|')}'), '')),
+      AssetEmoji() => emoji,
+    };
   }
 }

@@ -11,7 +11,7 @@ class Config {
     this.height = 256,
     this.swapCategoryAndBottomBar = false,
     this.checkPlatformCompatibility = true,
-    this.emojiSet = defaultEmojiSet,
+    this.emojiSet = defaultUnicodeEmojiSet,
     this.emojiTextStyle,
     this.emojiViewConfig = const EmojiViewConfig(),
     this.skinToneConfig = const SkinToneConfig(),

@@ -125,7 +125,7 @@ class EmojiPickerUtils {
 
   /// Applies skin tone to given emoji
   Emoji applySkinTone(Emoji emoji, String color) {
-    final codeUnits = emoji.emoji.codeUnits;
+    final codeUnits = emoji.value.codeUnits;
     var result = List<int>.empty(growable: true)
       // Basic emoji without gender (until char 2)
       ..addAll(codeUnits.sublist(0, min(codeUnits.length, 2)))
@@ -135,7 +135,11 @@ class EmojiPickerUtils {
     if (codeUnits.length >= 2) {
       result.addAll(codeUnits.sublist(2));
     }
-    return emoji.copyWith(emoji: String.fromCharCodes(result));
+
+    return switch (emoji) {
+      UnicodeEmoji() => emoji.copyWith(value: String.fromCharCodes(result)),
+      AssetEmoji() => emoji.copyWith(value: String.fromCharCodes(result)),
+    };
   }
 
   /// Clears the list of recent emojis

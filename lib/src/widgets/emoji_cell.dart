@@ -134,23 +134,33 @@ class EmojiCell extends StatelessWidget {
 
   /// Build and display Emoji centered of its parent
   Widget _buildEmoji() {
-    final emojiText = Text(
-      emoji.emoji,
-      textScaler: const TextScaler.linear(1.0),
-      style: _getEmojiTextStyle(),
-    );
+    switch (emoji) {
+      case final UnicodeEmoji emoji:
+        final emojiText = Text(
+          emoji.value,
+          textScaler: const TextScaler.linear(1.0),
+          style: _getEmojiTextStyle(),
+        );
 
-    return emoji.hasSkinTone &&
-            enableSkinTones &&
-            onSkinToneDialogRequested != null
-        ? Container(
-            decoration: TriangleDecoration(
-              color: skinToneIndicatorColor,
-              size: 8.0,
-            ),
-            child: emojiText,
-          )
-        : emojiText;
+        return emoji.hasSkinTone &&
+                enableSkinTones &&
+                onSkinToneDialogRequested != null
+            ? Container(
+                decoration: TriangleDecoration(
+                  color: skinToneIndicatorColor,
+                  size: 8.0,
+                ),
+                child: emojiText,
+              )
+            : emojiText;
+      case final AssetEmoji emoji:
+        return Image.asset(
+          emoji.assetPath,
+          fit: BoxFit.contain,
+          width: emojiSize,
+          height: emojiSize,
+        );
+    }
   }
 
   TextStyle _getEmojiTextStyle() {

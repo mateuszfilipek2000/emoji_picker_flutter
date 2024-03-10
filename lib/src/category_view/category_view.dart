@@ -47,6 +47,8 @@ IconData getIconForCategory(CategoryIcons categoryIcons, Category category) {
       return categoryIcons.symbolIcon;
     case Category.FLAGS:
       return categoryIcons.flagIcon;
+    case Category.CUSTOM:
+      return categoryIcons.customIcon;
     default:
       throw Exception('Unsupported Category');
   }

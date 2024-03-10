@@ -17,6 +17,7 @@ class CategoryIcons {
     this.objectIcon = Icons.lightbulb_outline,
     this.symbolIcon = Icons.emoji_symbols,
     this.flagIcon = Icons.flag,
+    this.customIcon = Icons.cabin,
   });
 
   /// Icon for [Category.RECENT]
@@ -45,4 +46,7 @@ class CategoryIcons {
 
   /// Icon for [Category.FLAGS]
   final IconData flagIcon;
+
+  /// Icon for [Category.CUSTOM]
+  final IconData customIcon;
 }

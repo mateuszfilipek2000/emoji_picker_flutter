@@ -66,15 +66,15 @@ class SearchViewState<T extends SearchView> extends State<T>
       ..clear()
       ..addAll(emojis);
     results.asMap().entries.forEach((e) {
-      links[e.value.emoji] = LayerLink();
+      links[e.value.value] = LayerLink();
     });
   }
 
   /// Build emoji cell
   Widget buildEmoji(Emoji emoji, double emojiSize, double emojiBoxSize) {
     return addSkinToneTargetIfAvailable(
-      hasSkinTone: emoji.hasSkinTone,
-      linkKey: emoji.emoji,
+      hasSkinTone: emoji is UnicodeEmoji && emoji.hasSkinTone,
+      linkKey: emoji.value,
       child: EmojiCell.fromConfig(
         emoji: emoji,
         emojiSize: emojiSize,
@@ -84,7 +84,8 @@ class SearchViewState<T extends SearchView> extends State<T>
         onSkinToneDialogRequested:
             (emojiBoxPosition, emoji, emojiSize, category) {
           closeSkinToneOverlay();
-          if (!emoji.hasSkinTone || !widget.config.skinToneConfig.enabled) {
+          if (!(emoji is UnicodeEmoji && emoji.hasSkinTone) ||
+              !widget.config.skinToneConfig.enabled) {
             return;
           }
           showSkinToneOverlay(
@@ -94,7 +95,7 @@ class SearchViewState<T extends SearchView> extends State<T>
             null, // Todo: check if we can provide the category
             widget.config,
             _onSkinTonedEmojiSelected,
-            links[emoji.emoji]!,
+            links[emoji.value]!,
           );
         },
       ),

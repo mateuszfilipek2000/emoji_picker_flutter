@@ -13,31 +13,36 @@ void skinToneTests() {
 
   test('applySkinTone()', () {
     expect(
-      utils.applySkinTone(const Emoji('👍', ''), SkinTone.light).emoji,
+      utils.applySkinTone(const UnicodeEmoji('👍', ''), SkinTone.light).value,
       '👍🏻',
     );
     expect(
-      utils.applySkinTone(const Emoji('🏊‍♂️', ''), SkinTone.mediumDark).emoji,
+      utils
+          .applySkinTone(const UnicodeEmoji('🏊‍♂️', ''), SkinTone.mediumDark)
+          .value,
       '🏊🏾‍♂️',
     );
     expect(
-      utils.applySkinTone(const Emoji('👱‍♀️', ''), SkinTone.dark).emoji,
+      utils.applySkinTone(const UnicodeEmoji('👱‍♀️', ''), SkinTone.dark).value,
       '👱🏿‍♀️',
     );
   });
 
   test('removeSkinTone()', () {
-    expect(internalUtils.removeSkinTone(const Emoji('👍🏻', '')).emoji, '👍');
-    expect(internalUtils.removeSkinTone(const Emoji('🏊🏾‍♂️', '')).emoji,
+    expect(internalUtils.removeSkinTone(const UnicodeEmoji('👍🏻', '')).value,
+        '👍');
+    expect(
+        internalUtils.removeSkinTone(const UnicodeEmoji('🏊🏾‍♂️', '')).value,
         '🏊‍♂️');
-    expect(internalUtils.removeSkinTone(const Emoji('👱🏿‍♀️', '')).emoji,
+    expect(
+        internalUtils.removeSkinTone(const UnicodeEmoji('👱🏿‍♀️', '')).value,
         '👱‍♀️');
   });
 }
 
 void emojiModelTests() {
   test('encode Emoji', () {
-    final encode = const Emoji('🤣', 'name');
+    final encode = const UnicodeEmoji('🤣', 'name');
     expect(encode.toJson(),
         <String, dynamic>{'emoji': '🤣', 'name': 'name', 'hasSkinTone': false});
   });
@@ -46,8 +51,10 @@ void emojiModelTests() {
     final decode = <String, dynamic>{'name': 'name', 'emoji': '🤣'};
     final result = Emoji.fromJson(decode);
     expect(result.name, 'name');
-    expect(result.emoji, '🤣');
-    expect(result.hasSkinTone, false);
+    expect(result.value, '🤣');
+
+    final hasSkintone = result as UnicodeEmoji;
+    expect(hasSkintone, false);
   });
 
   test('decode Emoji with hasSkinTone property', () {
@@ -58,7 +65,9 @@ void emojiModelTests() {
     };
     final result = Emoji.fromJson(decode);
     expect(result.name, 'name');
-    expect(result.emoji, '🤣');
-    expect(result.hasSkinTone, true);
+    expect(result.value, '🤣');
+    final hasSkinTone = result as UnicodeEmoji;
+
+    expect(hasSkinTone, true);
   });
 }

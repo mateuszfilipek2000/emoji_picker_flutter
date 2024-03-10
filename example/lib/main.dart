@@ -3,12 +3,34 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  final assetGitEmojiSet = <AssetEmoji>[];
+
+  final gifAssets = [
+    'aparat.gif',
+    'beksa.gif',
+    'hura.gif',
+  ];
+
+  for (final gif in gifAssets) {
+    final name = gif.split('.').first;
+    final backingValue = '<$name>';
+    final gifPath = 'assets/gif/$gif';
+
+    assetGitEmojiSet.add(
+      AssetEmoji(name: name, value: backingValue, assetPath: gifPath),
+    );
+  }
+
+  runApp(MyApp(
+    assetGifEmojiSet: assetGitEmojiSet,
+  ));
 }
 
 /// Example for EmojiPicker
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.assetGifEmojiSet});
+
+  final List<AssetEmoji> assetGifEmojiSet;
 
   @override
   MyAppState createState() => MyAppState();
@@ -107,6 +129,10 @@ class MyAppState extends State<MyApp> {
                   textEditingController: _controller,
                   scrollController: _scrollController,
                   config: Config(
+                    emojiSet: [
+                      ...defaultUnicodeEmojiSet,
+                      CategoryEmoji(Category.CUSTOM, widget.assetGifEmojiSet),
+                    ],
                     height: 256,
                     checkPlatformCompatibility: true,
                     emojiViewConfig: EmojiViewConfig(

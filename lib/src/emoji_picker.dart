@@ -32,6 +32,9 @@ enum Category {
 
   /// Flag emojis
   FLAGS,
+
+  /// Custom category
+  CUSTOM,
 }
 
 /// Extension on Category enum to get its name
@@ -57,6 +60,8 @@ extension CategoryExtension on Category {
         return 'symbols';
       case Category.FLAGS:
         return 'flags';
+      case Category.CUSTOM:
+        return 'custom';
     }
   }
 }
@@ -325,7 +330,7 @@ class EmojiPickerState extends State<EmojiPicker> {
       final cursorPosition = controller.selection.base.offset;
 
       if (cursorPosition < 0) {
-        controller.text += emoji.emoji;
+        controller.text += emoji.value;
         widget.onEmojiSelected?.call(category, emoji);
         return;
       }
@@ -333,9 +338,9 @@ class EmojiPickerState extends State<EmojiPicker> {
       final newText = text.replaceRange(
         selection.start,
         selection.end,
-        emoji.emoji,
+        emoji.value,
       );
-      final emojiLength = emoji.emoji.length;
+      final emojiLength = emoji.value.length;
       controller.value = controller.value.copyWith(
         text: newText,
         selection: selection.copyWith(

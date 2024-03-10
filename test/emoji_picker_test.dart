@@ -55,8 +55,8 @@ void main() {
       expect(_controller.text, contains('🙂'));
 
       // Check if the emoji been passed to the 'onEmojiSelected' callback
-      expect(
-          _emojiSelected, equals(const Emoji('🙂', 'Slightly Smiling Face')));
+      expect(_emojiSelected,
+          equals(const UnicodeEmoji('🙂', 'Slightly Smiling Face')));
 
       // Check if the category been passed to the 'onEmojiSelected' callback
       expect(_categorySelected, equals(Category.SMILEYS));
@@ -66,7 +66,7 @@ void main() {
         (WidgetTester tester) async {
       final _controller = TextEditingController();
       final _utils = EmojiPickerUtils();
-      final emoji = const Emoji('👍', 'Thumbs Up', hasSkinTone: true);
+      final emoji = const UnicodeEmoji('👍', 'Thumbs Up', hasSkinTone: true);
       Emoji? _emojiSelected;
       Category? _categorySelected;
 
@@ -98,7 +98,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find an emoji in the picker
-      final emojiToFind = find.text(emoji.emoji);
+      final emojiToFind = find.text(emoji.value);
 
       // Scroll until the emoji to be found appears.
       await tester.dragUntilVisible(
@@ -120,7 +120,7 @@ void main() {
       Finder? skinToneVariantToFind;
       for (var i = 0; i < SkinTone.values.length; i++) {
         skinToneVariantToFind =
-            find.text(_utils.applySkinTone(emoji, SkinTone.values[i]).emoji);
+            find.text(_utils.applySkinTone(emoji, SkinTone.values[i]).value);
         // Verify if we can find the skintone variant
         expect(skinToneVariantToFind, findsOneWidget);
       }
@@ -132,9 +132,8 @@ void main() {
       expect(_controller.text, contains('👍🏿'));
 
       // Check if the emoji been passed to the 'onEmojiSelected' callback
-      expect(_emojiSelected?.emoji, equals('👍🏿'));
+      expect(_emojiSelected?.value, equals('👍🏿'));
       expect(_emojiSelected?.name, equals('Thumbs Up'));
-      expect(_emojiSelected?.hasSkinTone, equals(true));
 
       // Check if the category been passed to the 'onEmojiSelected' callback
       expect(_categorySelected, equals(Category.SMILEYS));

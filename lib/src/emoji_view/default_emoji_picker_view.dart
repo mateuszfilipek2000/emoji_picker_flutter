@@ -152,10 +152,15 @@ class _DefaultEmojiPickerViewState extends State<DefaultEmojiPickerView>
       ),
       itemCount: categoryEmoji.emoji.length,
       itemBuilder: (context, index) {
+        final hasSkinTone = switch (categoryEmoji.emoji[index]) {
+          UnicodeEmoji(hasSkinTone: true) => true,
+          _ => false
+        };
+
         return addSkinToneTargetIfAvailable(
-          hasSkinTone: categoryEmoji.emoji[index].hasSkinTone,
+          hasSkinTone: hasSkinTone,
           linkKey:
-              categoryEmoji.category.name + categoryEmoji.emoji[index].emoji,
+              categoryEmoji.category.name + categoryEmoji.emoji[index].value,
           child: EmojiCell.fromConfig(
             emoji: categoryEmoji.emoji[index],
             emojiSize: emojiSize,
@@ -183,8 +188,11 @@ class _DefaultEmojiPickerViewState extends State<DefaultEmojiPickerView>
     double emojiSize,
     CategoryEmoji? categoryEmoji,
   ) {
+    final hasSkinTone =
+        switch (emoji) { UnicodeEmoji(hasSkinTone: true) => true, _ => false };
+
     closeSkinToneOverlay();
-    if (!emoji.hasSkinTone || !widget.config.skinToneConfig.enabled) {
+    if (!hasSkinTone || !widget.config.skinToneConfig.enabled) {
       return;
     }
     showSkinToneOverlay(
@@ -194,7 +202,7 @@ class _DefaultEmojiPickerViewState extends State<DefaultEmojiPickerView>
       categoryEmoji,
       widget.config,
       _onSkinTonedEmojiSelected,
-      links[categoryEmoji!.category.name + emoji.emoji]!,
+      links[categoryEmoji!.category.name + emoji.value]!,
     );
   }
 
