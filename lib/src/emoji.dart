@@ -47,8 +47,8 @@ final class UnicodeEmoji extends Emoji {
 
   static UnicodeEmoji fromJson(Map<String, dynamic> json) {
     return UnicodeEmoji(
-      json['name'] as String,
       json['value'] as String,
+      json['name'] as String,
       hasSkinTone: json['hasSkinTone'] as bool,
     );
   }

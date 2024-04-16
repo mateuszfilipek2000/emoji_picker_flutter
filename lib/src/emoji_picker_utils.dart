@@ -7,8 +7,7 @@ import 'package:flutter/material.dart';
 /// Emoji Regex
 /// Keycap Sequence '((\u0023|\u002a|[\u0030-\u0039])\ufe0f\u20e3){1}'
 /// Issue: https://github.com/flutter/flutter/issues/36062
-const EmojiRegex =
-    r'((\u0023|\u002a|[\u0030-\u0039])\ufe0f\u20e3){1}|\p{Emoji}|\u200D|\uFE0F';
+const EmojiRegex = r'((\u0023|\u002a|[\u0030-\u0039])\ufe0f\u20e3){1}|\p{Emoji}|\u200D|\uFE0F';
 
 /// Helper class that provides extended usage
 class EmojiPickerUtils {
@@ -24,8 +23,8 @@ class EmojiPickerUtils {
   RegExp? _emojiRegExp;
 
   /// Returns list of recently used emoji from cache
-  Future<List<RecentEmoji>> getRecentEmojis() async {
-    return EmojiPickerInternalUtils().getRecentEmojis();
+  Future<List<RecentEmoji>> getRecentEmojis(String key) async {
+    return EmojiPickerInternalUtils().getRecentEmojis(key: key);
   }
 
   /// Search for related emoticons based on keywords
@@ -36,11 +35,9 @@ class EmojiPickerUtils {
     if (_allAvailableEmojiEntities.isEmpty) {
       final emojiPickerInternalUtils = EmojiPickerInternalUtils();
 
-      final data = [...emojiSet]
-        ..removeWhere((e) => e.category == Category.RECENT);
-      final availableCategoryEmoji = checkPlatformCompatibility
-          ? await emojiPickerInternalUtils.filterUnsupported(data)
-          : data;
+      final data = [...emojiSet]..removeWhere((e) => e.category == Category.RECENT);
+      final availableCategoryEmoji =
+          checkPlatformCompatibility ? await emojiPickerInternalUtils.filterUnsupported(data) : data;
 
       // Set all the emoji entities
       for (var emojis in availableCategoryEmoji) {
@@ -50,8 +47,7 @@ class EmojiPickerUtils {
 
     return _allAvailableEmojiEntities
         .toSet()
-        .where(
-            (emoji) => emoji.name.toLowerCase().contains(keyword.toLowerCase()))
+        .where((emoji) => emoji.name.toLowerCase().contains(keyword.toLowerCase()))
         .toSet()
         .toList();
   }
@@ -64,8 +60,7 @@ class EmojiPickerUtils {
   }) async {
     return EmojiPickerInternalUtils()
         .addEmojiToRecentlyUsed(emoji: emoji, config: config)
-        .then((recentEmojiList) =>
-            key.currentState?.updateRecentEmoji(recentEmojiList));
+        .then((recentEmojiList) => key.currentState?.updateRecentEmoji(recentEmojiList));
   }
 
   /// Produce a list of spans to adjust style for emoji characters.
@@ -77,9 +72,7 @@ class EmojiPickerUtils {
     required TextStyle emojiStyle,
     TextStyle? parentStyle,
   }) {
-    final composedEmojiStyle = (parentStyle ?? const TextStyle())
-        .merge(DefaultEmojiTextStyle)
-        .merge(emojiStyle);
+    final composedEmojiStyle = (parentStyle ?? const TextStyle()).merge(DefaultEmojiTextStyle).merge(emojiStyle);
 
     final spans = <TextSpan>[];
     final matches = getEmojiRegex().allMatches(text).toList();
@@ -88,8 +81,7 @@ class EmojiPickerUtils {
       if (cursor != match.start) {
         // Non emoji text + following emoji
         spans
-          ..add(TextSpan(
-              text: text.substring(cursor, match.start), style: parentStyle))
+          ..add(TextSpan(text: text.substring(cursor, match.start), style: parentStyle))
           ..add(TextSpan(
             text: text.substring(match.start, match.end),
             style: composedEmojiStyle,
@@ -117,8 +109,7 @@ class EmojiPickerUtils {
     }
     // Add remaining text
     if (cursor != text.length) {
-      spans.add(TextSpan(
-          text: text.substring(cursor, text.length), style: parentStyle));
+      spans.add(TextSpan(text: text.substring(cursor, text.length), style: parentStyle));
     }
     return spans;
   }
@@ -143,10 +134,9 @@ class EmojiPickerUtils {
   }
 
   /// Clears the list of recent emojis
-  Future<void> clearRecentEmojis(
-      {required GlobalKey<EmojiPickerState> key}) async {
+  Future<void> clearRecentEmojis({required GlobalKey<EmojiPickerState> key, required String sharedPrefsKey}) async {
     return await EmojiPickerInternalUtils()
-        .clearRecentEmojisInLocalStorage()
+        .clearRecentEmojisInLocalStorage(sharedPrefsKey)
         .then((_) => key.currentState?.updateRecentEmoji([], refresh: true));
   }
 

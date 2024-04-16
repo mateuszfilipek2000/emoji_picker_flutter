@@ -18,9 +18,7 @@ class EmojiPickerInternalUtils {
   // Get available emoji for given category title
   Future<CategoryEmoji> _getAvailableEmojis(CategoryEmoji category) async {
     var available = (await _platform.invokeListMethod<bool>(
-        'getSupportedEmojis', {
-      'source': category.emoji.map((e) => e.value).toList(growable: false)
-    }))!;
+        'getSupportedEmojis', {'source': category.emoji.map((e) => e.value).toList(growable: false)}))!;
 
     return category.copyWith(emoji: [
       for (int i = 0; i < available.length; i++)
@@ -29,8 +27,7 @@ class EmojiPickerInternalUtils {
   }
 
   /// Filters out emojis not supported on the platform
-  Future<List<CategoryEmoji>> filterUnsupported(
-      List<CategoryEmoji> data) async {
+  Future<List<CategoryEmoji>> filterUnsupported(List<CategoryEmoji> data) async {
     if (kIsWeb || !Platform.isAndroid) {
       return data;
     }
@@ -39,9 +36,12 @@ class EmojiPickerInternalUtils {
   }
 
   /// Returns list of recently used emoji from cache
-  Future<List<RecentEmoji>> getRecentEmojis() async {
+  Future<List<RecentEmoji>> getRecentEmojis({
+    required String key,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
-    var emojiJson = prefs.getString('recent');
+
+    var emojiJson = prefs.getString(key);
     if (emojiJson == null) {
       return [];
     }
@@ -50,16 +50,14 @@ class EmojiPickerInternalUtils {
   }
 
   /// Add an emoji to recently used list
-  Future<List<RecentEmoji>> addEmojiToRecentlyUsed(
-      {required Emoji emoji, Config config = const Config()}) async {
+  Future<List<RecentEmoji>> addEmojiToRecentlyUsed({required Emoji emoji, Config config = const Config()}) async {
     // Remove emoji's skin tone in Recent-Category
     if (emoji case UnicodeEmoji(:final hasSkinTone) when hasSkinTone) {
       emoji = removeSkinTone(emoji);
     }
 
-    var recentEmoji = await getRecentEmojis();
-    var recentEmojiIndex =
-        recentEmoji.indexWhere((element) => element.emoji.value == emoji.value);
+    var recentEmoji = await getRecentEmojis(key: config.sharedPrefsKey);
+    var recentEmojiIndex = recentEmoji.indexWhere((element) => element.emoji.value == emoji.value);
     if (recentEmojiIndex != -1) {
       // Already exist in recent list
       // Remove it
@@ -69,26 +67,23 @@ class EmojiPickerInternalUtils {
     recentEmoji.insert(0, RecentEmoji(emoji, initVal));
 
     // Limit entries to recentsLimit
-    recentEmoji = recentEmoji.sublist(
-        0, min(config.emojiViewConfig.recentsLimit, recentEmoji.length));
+    recentEmoji = recentEmoji.sublist(0, min(config.emojiViewConfig.recentsLimit, recentEmoji.length));
 
     // save locally
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('recent', jsonEncode(recentEmoji));
+    prefs.setString(config.sharedPrefsKey, jsonEncode(recentEmoji));
 
     return recentEmoji;
   }
 
   /// Add an emoji to popular used list or increase its counter
-  Future<List<RecentEmoji>> addEmojiToPopularUsed(
-      {required Emoji emoji, Config config = const Config()}) async {
+  Future<List<RecentEmoji>> addEmojiToPopularUsed({required Emoji emoji, Config config = const Config()}) async {
     // Remove emoji's skin tone in Recent-Category
     if (emoji case UnicodeEmoji(:final hasSkinTone) when hasSkinTone) {
       emoji = removeSkinTone(emoji);
     }
-    var recentEmoji = await getRecentEmojis();
-    var recentEmojiIndex =
-        recentEmoji.indexWhere((element) => element.emoji.value == emoji.value);
+    var recentEmoji = await getRecentEmojis(key: config.sharedPrefsKey);
+    var recentEmojiIndex = recentEmoji.indexWhere((element) => element.emoji.value == emoji.value);
     if (recentEmojiIndex != -1) {
       // Already exist in recent list
       // Just update counter
@@ -105,20 +100,19 @@ class EmojiPickerInternalUtils {
     recentEmoji.sort((a, b) => b.counter - a.counter);
 
     // Limit entries to recentsLimit
-    recentEmoji = recentEmoji.sublist(
-        0, min(config.emojiViewConfig.recentsLimit, recentEmoji.length));
+    recentEmoji = recentEmoji.sublist(0, min(config.emojiViewConfig.recentsLimit, recentEmoji.length));
 
     // save locally
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('recent', jsonEncode(recentEmoji));
+    prefs.setString(config.sharedPrefsKey, jsonEncode(recentEmoji));
 
     return recentEmoji;
   }
 
   /// Clears the list of recent emojis in local storage
-  Future<void> clearRecentEmojisInLocalStorage() async {
+  Future<void> clearRecentEmojisInLocalStorage(String key) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('recent', jsonEncode([]));
+    prefs.setString(key, jsonEncode([]));
   }
 
   /// Remove skin tone from given emoji
@@ -130,9 +124,7 @@ class EmojiPickerInternalUtils {
     //   ),
     // );
     return switch (emoji) {
-      UnicodeEmoji() => emoji.copyWith(
-          value: emoji.value
-              .replaceFirst(RegExp('${SkinTone.values.join('|')}'), '')),
+      UnicodeEmoji() => emoji.copyWith(value: emoji.value.replaceFirst(RegExp('${SkinTone.values.join('|')}'), '')),
       AssetEmoji() => emoji,
     };
   }

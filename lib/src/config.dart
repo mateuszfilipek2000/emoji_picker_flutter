@@ -13,12 +13,16 @@ class Config {
     this.checkPlatformCompatibility = true,
     this.emojiSet = defaultUnicodeEmojiSet,
     this.emojiTextStyle,
+    this.sharedPrefsKey = 'recent_emojis',
     this.emojiViewConfig = const EmojiViewConfig(),
     this.skinToneConfig = const SkinToneConfig(),
     this.categoryViewConfig = const CategoryViewConfig(),
     this.bottomActionBarConfig = const BottomActionBarConfig(),
     this.searchViewConfig = const SearchViewConfig(),
   });
+
+  /// Key for shared preferences
+  final String sharedPrefsKey;
 
   /// Max Height of the Emoji's view
   final double height;

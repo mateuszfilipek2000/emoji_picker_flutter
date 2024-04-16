@@ -36,7 +36,7 @@ class MyAppState extends State<MyApp> {
                   child: const Text('Clear Recent Emoji'),
                   onPressed: () {
                     // 3. Clear Recent Emoji List
-                    EmojiPickerUtils().clearRecentEmojis(key: key);
+                    EmojiPickerUtils().clearRecentEmojis(key: key, sharedPrefsKey: 'recent_emojis');
                   },
                 ),
               ),
@@ -89,8 +89,7 @@ class MyAppState extends State<MyApp> {
                     hintText: 'Type a message',
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.only(
-                        left: 16.0, bottom: 8.0, top: 8.0, right: 16.0),
+                    contentPadding: const EdgeInsets.only(left: 16.0, bottom: 8.0, top: 8.0, right: 16.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(50.0),
                     ),

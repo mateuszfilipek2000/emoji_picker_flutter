@@ -24,8 +24,7 @@ abstract class SearchView extends StatefulWidget {
 
 /// Template class for custom implementation
 /// Inhert this class to create your own search view state
-class SearchViewState<T extends SearchView> extends State<T>
-    with SkinToneOverlayStateMixin {
+class SearchViewState<T extends SearchView> extends State<T> with SkinToneOverlayStateMixin {
   /// Emoji picker utils
   final utils = EmojiPickerUtils();
 
@@ -41,7 +40,11 @@ class SearchViewState<T extends SearchView> extends State<T>
       // Auto focus textfield
       FocusScope.of(context).requestFocus(focusNode);
       // Load recent emojis initially
-      utils.getRecentEmojis().then(
+      utils
+          .getRecentEmojis(
+            widget.config.sharedPrefsKey,
+          )
+          .then(
             (value) => setState(
               () => _updateResults(value.map((e) => e.emoji).toList()),
             ),
@@ -81,11 +84,9 @@ class SearchViewState<T extends SearchView> extends State<T>
         emojiBoxSize: emojiBoxSize,
         onEmojiSelected: widget.state.onEmojiSelected,
         config: widget.config,
-        onSkinToneDialogRequested:
-            (emojiBoxPosition, emoji, emojiSize, category) {
+        onSkinToneDialogRequested: (emojiBoxPosition, emoji, emojiSize, category) {
           closeSkinToneOverlay();
-          if (!(emoji is UnicodeEmoji && emoji.hasSkinTone) ||
-              !widget.config.skinToneConfig.enabled) {
+          if (!(emoji is UnicodeEmoji && emoji.hasSkinTone) || !widget.config.skinToneConfig.enabled) {
             return;
           }
           showSkinToneOverlay(
